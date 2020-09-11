@@ -9,86 +9,15 @@ library(JM)
 
 
 
-#### load data and initial models on 500 subjects ####
-
-load("dnhs500.RData")
-load("lmeFit_nhs_ns2int500.RData")
-load("coxFit_nhs_ns2int500.RData")
-
-host <- system("hostname",intern=TRUE)
-args <- commandArgs(TRUE)
-job <- as.numeric(args[1])
-rep <- as.numeric(args[2])
-
-core <- c(1,2,3,4,6,8,10,15,20,25,30)
-
-
-
-### numrial derivatives
-
-sortie <- NULL
-
-for(k in core) {
-
- JM <- jointModel(lmeObject = lmeFit,
-               survObject = coxFit,
-               timeVar = "t",
-               parameterization = "value",
-               method = "spline-PH-aGH",
-               control = list(optimizer="marq",GHk = 3, lng.in.kn = 1,
-                iter.EM=0,iter.qN=50,nproc=k, numeriDeriv=TRUE),
-               verbose = TRUE)
-
-sortie <- rbind(sortie,c(k,JM$CPUtime,JM$logLik,JM$iters,JM$convergence))
-colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/JM_nhs500_numeriDeriv_",host,"_",job,"_",rep,".RData",sep=""))
-}
-
-
-rm(sortie,JM,k)
-
-
-
-### analytical derivatives
-
-sortie <- NULL
-
-for(k in core) {
-
- JM <- jointModel(lmeObject = lmeFit,
-               survObject = coxFit,
-               timeVar = "t",
-               parameterization = "value",
-               method = "spline-PH-aGH",
-               control = list(optimizer="marq",GHk = 3, lng.in.kn = 1,
-                iter.EM=0,iter.qN=50,nproc=k, numeriDeriv=FALSE),
-               verbose = TRUE)
-
-sortie <- rbind(sortie,c(k,JM$CPUtime,JM$logLik,JM$iters,JM$convergence))
-colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/JM_nhs500_analyDeriv_",host,"_",job,"_",rep,".RData",sep=""))
-}
-
-
-
-rm(list=ls())
-
 #### load data and initial models on 5000 subjects ####
 
-load("dnhs5000.RData")
-load("lmeFit_nhs_ns2int5000.RData")
-load("coxFit_nhs_ns2int5000.RData")
+load("data_mla_5000.RData")
+load("lmeFit.RData")
+load("coxFit.RData")
 JM <- NULL
 sortie <- NULL
 
-host <- system("hostname",intern=TRUE)
-args <- commandArgs(TRUE)
-job <- as.numeric(args[1])
-rep <- as.numeric(args[2])
-
 core <- c(1,2,3,4,6,8,10,15,20,25,30)
-
-
 
 ### numerical derivatives
 
@@ -107,7 +36,7 @@ for(k in core) {
 
 sortie <- rbind(sortie,c(k,JM$CPUtime,JM$logLik,JM$iters,JM$convergence))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/JM_nhs5000_numeriDeriv_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="JM_numeriDeriv.RData")
 }
 
 
@@ -133,7 +62,7 @@ for(k in core) {
 
 sortie <- rbind(sortie,c(k,JM$CPUtime,JM$logLik,JM$iters,JM$convergence))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/JM_nhs5000_analyDeriv_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="JM_analyDeriv.RData")
 }
 
 
@@ -150,15 +79,9 @@ library(lcmmMLA)
 
 
 ## load simulated data set
-load("dnhs.RData")
-
-host <- system("hostname",intern=TRUE)
-args <- commandArgs(TRUE)
-job <- as.numeric(args[1])
-rep <- as.numeric(args[2])
+load("data_mla.RData")
 
 core <- c(1,2,3,4,6,8,10,15,20,25,30)
-
 
 
 ### one latent class
@@ -167,11 +90,11 @@ sortie <- NULL
 
 for(k in core) {
     mG1 <- hlme(Y~1+I(t/10)+I((t/10)^2), random=~1+I(t/10)+I((t/10)^2),
-                subject="i",ng=1,data=dnhs,verbose=FALSE,maxiter=30,nproc=k)
+                subject="i",ng=1,data=data_mla,verbose=FALSE,maxiter=30,nproc=k)
 
 sortie <- rbind(sortie,c(k,mG1$time,mG1$loglik,mG1$ni,mG1$istop))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/hlme_G1_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="hlme_G1.RData")
 }
 
 
@@ -187,11 +110,11 @@ sortie <- NULL
 for(k in core) {
     mG2 <- hlme(Y~1+I(t/10)+I((t/10)^2), random=~1+I(t/10)+I((t/10)^2),
                 mixture=~1+I(t/10)+I((t/10)^2),nwg=TRUE,classmb=~X1+X2+X3,
-                subject="i",ng=2,data=dnhs,verbose=FALSE,maxiter=30,nproc=k,B=b2)
+                subject="i",ng=2,data=data_mla,verbose=FALSE,maxiter=30,nproc=k,B=b2)
 
 sortie <- rbind(sortie,c(k,mG2$time,mG2$loglik,mG2$ni,mG2$istop))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/hlme_G2_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="hlme_G2.RData")
 }
 
 
@@ -210,11 +133,11 @@ sortie <- NULL
 for(k in core) {
     mG3 <- hlme(Y~1+I(t/10)+I((t/10)^2), random=~1+I(t/10)+I((t/10)^2),
                 mixture=~1+I(t/10)+I((t/10)^2),nwg=TRUE,classmb=~X1+X2+X3,
-                subject="i",ng=3,data=dnhs,verbose=FALSE,maxiter=30,nproc=k,B=b3)
+                subject="i",ng=3,data=data_mla,verbose=FALSE,maxiter=30,nproc=k,B=b3)
 
 sortie <- rbind(sortie,c(k,mG3$time,mG3$loglik,mG3$ni,mG3$istop))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/hlme_G3_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="hlme_G3.RData")
 }
 
 
@@ -234,11 +157,11 @@ sortie <- NULL
 for(k in core) {
     mG4 <- hlme(Y~1+I(t/10)+I((t/10)^2), random=~1+I(t/10)+I((t/10)^2),
                 mixture=~1+I(t/10)+I((t/10)^2),nwg=TRUE,classmb=~X1+X2+X3,
-                subject="i",ng=4,data=dnhs,verbose=FALSE,maxiter=30,nproc=k,B=b4)
+                subject="i",ng=4,data=data_mla,verbose=FALSE,maxiter=30,nproc=k,B=b4)
 
 sortie <- rbind(sortie,c(k,mG4$time,mG4$loglik,mG4$ni,mG4$istop))
 colnames(sortie) <- c("core","CPUtime","loglik","iters","convergence")
-save(sortie,file=paste("res/hlme_G4_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="hlme_G4.RData")
 }
 
 
@@ -255,12 +178,6 @@ rm(list=ls())
 
 
 library(CInLPN)
-
-
-host <- system("hostname",intern=TRUE)
-args <- commandArgs(TRUE)
-job <- as.numeric(args[1])
-rep <- as.numeric(args[2])
 
 core <- c(1,2,3,4,6,8,10,15,20,25,30)
 
@@ -288,7 +205,7 @@ for(k in core) {
 
 sortie <- rbind(sortie,c(k,mod$MLAtime,mod$loglik,mod$niter,mod$conv))
 colnames(sortie) <- c("core","CPUtime","logLik","iters","convergence")
-save(sortie,file=paste("res/CInLPN_",host,"_",job,"_",rep,".RData",sep=""))
+#save(sortie,file="CInLPN.RData")
 }
     
 }

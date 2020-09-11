@@ -4,7 +4,7 @@
 library(marqLevAlg)
 
 
-## We first define the quantities to include as argument in \code{loglikLMM} function: 
+## We first define the quantities to include as argument in loglikLMM function: 
 
 Y <- dataEx$Y
 X <- as.matrix(cbind(1,dataEx[,c("t","X1","X3")],dataEx$t*dataEx$X1))
@@ -51,5 +51,8 @@ coef <- function(x){
     return(round(coef,digits = 4))
 }
 
-cbind(coef(estim),coef(estim2),coef(estim3))
+## Table 1 in the manuscript
+cbind(res(estim, 1, "no"), res(estim2, 2, "no"), res(estim3, 1, "yes"))
 
+## Table 2 in the manuscript
+cbind(coef(estim), coef(estim2), coef(estim3))
