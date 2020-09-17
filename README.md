@@ -11,9 +11,9 @@ The marqLevAlg R package can be downloaded from CRAN (https://CRAN.R-project.org
 
 It should be installed in a preliminary step.
 
-## Other R pacakges
+## Other R packages
 
-To run part of the R code, the 3 packages CInLPN, JM and lcmmMLA included in the repository as tarballs, should also be installed.
+To run part of the R code, the 3 packages CInLPN, JM and lcmmMLA (that rely on marqLevAlg) included in the repository as tarballs, should also be installed.
 
 ## R code
 
