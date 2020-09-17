@@ -1,5 +1,7 @@
 ### code of section 5 : benckmark ###
 
+## This section of the manuscript presents a benchmark on 7 models with 100 replications.
+## We give here the code for one replication.
 
 #########################################
 ############### JM + mla ################
