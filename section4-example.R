@@ -1,7 +1,7 @@
 ### code of section 4 : example ###
 
 
-library(marqLevAlg)
+library("marqLevAlg")
 
 
 ## We first define the quantities to include as argument in loglikLMM function: 
